@@ -30,6 +30,11 @@
     const allCategories = {{ Js::from($categories) }}
     const expenseCategories = allCategories.filter(c => c.type === 'expense');
     const incomeCategories = allCategories.filter(c => c.type === 'income');
+    const oldRowsRaw = {{ Js::from(old('rows', [])) }};
+    const oldRows = typeof oldRowsRaw === 'string'
+        ? JSON.parse(oldRowsRaw)
+        : (Array.isArray(oldRowsRaw) ? oldRowsRaw : Object.values(oldRowsRaw));
+
 </script>
 
 <div x-data="{
@@ -45,7 +50,12 @@
 
     {{-- ★2. 初期化時に1行目を追加する処理 --}}
     init() {
-        this.addRow();
+        const rows = Array.isArray(oldRows) ? oldRows : Object.values(oldRows);
+        if (rows.length > 0) {
+            this.rows = rows.map(row => ({ ...row, id: Date.now() + Math.random() }));
+        } else {
+            this.addRow();
+        }
     },
 
     addRow() {
