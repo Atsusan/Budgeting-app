@@ -10,25 +10,71 @@
 </style>
 @endpush
 
+{{-- 作成・更新・削除成功メッセージ --}}
+@php
+    // セッションキーに応じて色とアイコンを定義
+    $config = match(true) {
+        session()->has('success') => [
+            'color' => 'text-green-500 bg-green-100',
+            'border' => 'border-green-200',
+            'msg' => session('success')
+        ],
+        session()->has('updated') => [
+            'color' => 'text-blue-500 bg-blue-100',
+            'border' => 'border-blue-200',
+            'msg' => session('updated')
+        ],
+        session()->has('deleted') => [
+            'color' => 'text-red-500 bg-red-100',
+            'border' => 'border-red-200',
+            'msg' => session('deleted')
+        ],
+        default => null
+    };
+@endphp
+
 @section('content')
 {{-- Alpine.js の状態管理 --}}
 <div x-data="{
     isOpen: false,
+    isEditing: false,
     selectedItem: {},
     openModal(item) {
         this.selectedItem = item;
+        this.isEditing = false;
         this.isOpen = true;
+    },
+    openEditModal() {
+        this.isEditing = true;
     }
 }" @keydown.escape.window="isOpen = false" class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
 
-    {{ session('success') }}
-    @if (session('success'))
-        <div class="fixed top-5 right-5 z-50 flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-xl border border-green-200">
-            <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg text-green-500 bg-green-100">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-            </div>
-            <div class="ml-3 text-sm font-medium">{{ session('success') }}</div>
+    @if ($config)
+    <div x-data="{ show: true }"
+        x-init="setTimeout(() => show = false, 4000)"
+        x-show="show"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform translate-y-[-20px]"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed top-5 right-5 z-50 flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-xl border {{ $config['border'] }}"
+        role="alert">
+
+        {{-- アイコン部分の色を動的に変更 --}}
+        <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg {{ $config['color'] }}">
+            @if(session('deleted'))
+                {{-- 削除時はゴミ箱アイコンなど --}}
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+            @else
+                {{-- 作成・更新時はチェックアイコン --}}
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
+            @endif
         </div>
+
+        <div class="ml-3 text-sm font-medium">{{ $config['msg'] }}</div>
+    </div>
     @endif
     {{-- ヘッダーセクション --}}
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -91,6 +137,7 @@
                     <thead>
                         <tr class="bg-gray-50/50 border-b border-gray-100">
                             <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">日付</th>
+                            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">カテゴリ</th>
                             <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">内容</th>
                             <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase text-right">金額</th>
                         </tr>
@@ -101,14 +148,18 @@
                             <tr class="hover:bg-gray-50 transition cursor-pointer"
                                 @click="openModal({
                                             id: '{{ $transaction->id }}',
-                                            date: '{{ $transaction->date }}',
+                                            date: '{{ $transaction->date->format('Y/m/d') }}',
+                                            date_raw: '{{ $transaction->date->format('Y-m-d') }}',
                                             category: '{{ $transaction->category->name }}',
                                             amount: '{{ $transaction->category->type === 'income' ? '+' : '-' }} ¥{{ number_format($transaction->amount) }}',
                                             type: '{{ $transaction->category->type }}',
                                             description: '{{ $transaction->description }}',
-                                            color_code: '{{ $transaction->category->color_code }}'
+                                            color_code: '{{ $transaction->category->color_code }}',
+                                            category_id: '{{ $transaction->category_id }}',
+                                            raw_amount: '{{ $transaction->amount }}',
                                         })">
                                 <td class="px-6 py-4 text-gray-500">{{ $transaction->date->format('Y/m/d') }}</td>
+                                <td class="px-6 py-4 text-gray-500">{{ $transaction->category->name }}</td>
                                 <td class="px-6 py-4 font-medium">{{ $transaction->description }}</td>
                                 <td class="px-6 py-4 font-bold {{ $transaction->category->type === 'income' ? 'text-emerald-500' : 'text-red-500' }}  text-right">
                                     {{ $transaction->category->type === 'income' ? '+' : '-' }} ¥{{ number_format($transaction->amount) }}
@@ -161,7 +212,7 @@
         <div x-show="isOpen" x-transition.scale.95 class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden relative z-10">
             <div class="p-8">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-800">履歴詳細</h3>
+                    <h3 class="text-xl font-bold text-gray-800" x-text="isEditing ? '編集' : '履歴詳細'"></h3>
                     <button @click="isOpen = false" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -169,31 +220,76 @@
                     </button>
                 </div>
 
-                <div class="space-y-4 mb-8 text-sm">
-                    <div class="flex justify-between border-b border-gray-50 pb-2">
-                        <span class="text-gray-500">日付</span>
-                        <span class="font-semibold text-gray-800" x-text="selectedItem.date"></span>
+                {{-- A. 詳細表示モード --}}
+                <div x-show="!isEditing" class="space-y-6">
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="text-gray-500">日付</span>
+                            <span class="font-semibold text-gray-800" x-text="selectedItem.date"></span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="text-gray-500">カテゴリ</span>
+                            <span class="font-semibold text-gray-800" x-text="selectedItem.category"></span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="text-gray-500">内容</span>
+                            <span class="font-semibold text-gray-800" x-text="selectedItem.description"></span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                            <span class="text-gray-500">金額</span>
+                            <span :class="selectedItem.type === 'income' ? 'text-emerald-600' : 'text-red-500'" class="text-xl font-black" x-text="selectedItem.amount"></span>
+                        </div>
                     </div>
-                    <div class="flex justify-between border-b border-gray-50 pb-2">
-                        <span class="text-gray-500">項目</span>
-                        <span class="font-semibold text-gray-800" x-text="selectedItem.category"></span>
-                    </div>
-                    <div class="flex justify-between border-b border-gray-50 pb-2">
-                        <span class="text-gray-500">金額</span>
-                        <span :class="selectedItem.type === 'income' ? 'text-emerald-600' : 'text-red-500'" class="text-xl font-black" x-text="selectedItem.amount"></span>
+
+                    <div class="flex flex-col gap-3">
+                        <button type="button" @click="openEditModal()" class="w-full bg-indigo-600 text-white py-3 font-bold rounded-2xl hover:bg-indigo-700 transition">編集</button>
+                        <form class="w-full" :action="`/transaction/${selectedItem.id}`" method="POST">
+                            @method('DELETE')
+                            @csrf
+                            <button type="submit" class="w-full bg-red-50 text-red-600 py-3 font-bold rounded-2xl hover:bg-red-100 transition" onclick="return confirm('本当に削除しますか？')">削除</button>
+                        </form>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                {{-- B. 編集フォームモード --}}
+                <div x-show="isEditing" x-cloak>
                     <form class="w-full" :action="`/transaction/${selectedItem.id}`" method="POST">
+                        @csrf
                         @method('PATCH')
-                        @csrf
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-3 font-bold rounded-2xl hover:bg-indigo-700 transition">編集</button>
-                    </form>
-                    <form class="w-full" :action="`/transaction/${selectedItem.id}`" method="POST">
-                        @method('DELETE')
-                        @csrf
-                        <button type="submit" class="w-full bg-red-50 text-red-600 py-3 font-bold rounded-2xl hover:bg-red-100 transition">削除</button>
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400">日付</label>
+                                <input type="date" name="date"
+                                    :value="selectedItem.date_raw"
+                                    class="w-full px-4 py-3 bg-gray-50 rounded-xl mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400">カテゴリ</label>
+                                <select name="category_id" class="w-full px-4 py-3 bg-gray-50 rounded-xl mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}" :selected="selectedItem.category_id == {{ $cat->id }}">
+                                            {{ $cat->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400">金額</label>
+                                <input type="number" name="amount"
+                                    :value="selectedItem.raw_amount"
+                                    class="w-full px-4 py-3 bg-gray-50 rounded-xl mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-400">内容</label>
+                                <input type="text" name="description"
+                                    :value="selectedItem.description"
+                                    class="w-full px-4 py-3 bg-gray-50 rounded-xl mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="submit" class="w-full bg-indigo-600 text-white py-3 font-bold rounded-2xl hover:bg-indigo-700 transition">保存</button>
+                            <button type="button" @click="isEditing = false" class="w-full bg-gray-100 text-gray-600 py-3 font-bold rounded-2xl hover:bg-gray-200 transition">戻る</button>
+                        </div>
                     </form>
                 </div>
             </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionRequest;
+use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
@@ -46,14 +47,19 @@ class TransactionController extends Controller
 
         return redirect()->route('dashboard')->with('success', '取引が保存されました。');
     }
-    public function edit(Transaction $transaction)
+    public function update(UpdateTransactionRequest $request, Transaction $transaction)
     {
-        dd($transaction);
-    }
-    public function update(Request $request, Transaction $transaction)
-    {
+        abort_if($transaction->user_id != auth()->id(), 403);
+        $validated = $request->validated();
+        $transaction->update($validated);
+
+        return redirect()->route('dashboard')->with('updated', '取引が更新されました。');
     }
     public function destroy(Transaction $transaction)
     {
+        abort_if($transaction->user_id != auth()->id(), 403);
+
+        $transaction->delete();
+        return redirect()->route('dashboard')->with('deleted', '取引が削除されました。');
     }
 }

@@ -90,6 +90,16 @@
         </div>
     </div>
 
+    @if ($errors->any())
+    <div class="mb-4">
+        <ul class="text-sm text-red-600 flex flex-col gap-1">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {{-- メイン入力エリア --}}
         <div class="lg:col-span-3 space-y-6">
@@ -98,10 +108,10 @@
                     <table class="w-full text-left">
                         <thead>
                             <tr class="bg-gray-50/50 border-b border-gray-100">
-                                <th class="pl-8 pr-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Date</th>
-                                <th class="px-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Category</th>
-                                <th class="px-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">Memo</th>
-                                <th class="px-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest text-right">Amount</th>
+                                <th class="pl-8 pr-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">日付</th>
+                                <th class="px-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">カテゴリ</th>
+                                <th class="px-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">内容</th>
+                                <th class="px-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest text-right">金額</th>
                                 <th class="pl-4 pr-8 py-5"></th>
                             </tr>
                         </thead>

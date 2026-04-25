@@ -15,10 +15,17 @@ class DashboardController extends Controller
             ->with('category')
             ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->orderBy('date', 'desc')
-            ->orderBy('id', 'desc')            ->get();
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $categories = auth()->user()->categories()
+            ->select('id', 'name', 'type', 'color_code')
+            ->orderBy('created_at')
+            ->get();
 
         return view('dashboard', [
             'transactions' => $transactions,
+            'categories' => $categories,
         ]);
     }
 }
