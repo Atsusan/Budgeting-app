@@ -73,6 +73,24 @@
             this.rows = [];
             this.addRow();
         }
+    },
+    focusNext(rowId, currentField) {
+        const fields = ['date', 'category', 'description', 'amount'];
+        const currentIndex = fields.indexOf(currentField);
+
+        if (currentIndex < fields.length - 1) {
+            // 同じ行の次のフィールドへ
+            this.$nextTick(() => {
+                document.getElementById(`${fields[currentIndex + 1]}-${rowId}`)?.focus();
+            });
+        } else {
+            // amount で Enter → 新しい行を追加して日付にフォーカス
+            this.addRow();
+            this.$nextTick(() => {
+                const newRow = this.rows[this.rows.length - 1];
+                document.getElementById(`date-${newRow.id}`)?.focus();
+            });
+        }
     }
 }" class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8" x-cloak>
 
@@ -129,17 +147,38 @@
                             <template x-for="(row, index) in rows" :key="row.id">
                                 <tr class="transition-colors group">
                                     <td class="pl-8 pr-4 py-5">
-                                        <input type="date" x-model="row.date" class="w-full px-3 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-bold text-gray-700 text-sm outline-none transition-all">
+                                        <input
+                                            type="date"
+                                            x-model="row.date"
+                                            class="w-full px-3 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-bold text-gray-700 text-sm outline-none transition-all"
+                                            :id="'date-' + row.id"
+                                            :class="errors.rows?.[index]?.date ? 'border-red-500' : ''"
+                                            @keydown.enter.prevent="focusNext(row.id, 'date')"
+                                        >
                                     </td>
                                     <td class="px-2 py-4">
-                                        <select x-model="row.category_id" class="w-full px-3 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-bold text-gray-700 text-sm outline-none transition-all cursor-pointer appearance-none">
+                                        <select
+                                            x-model="row.category_id"
+                                            class="w-full px-3 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-bold text-gray-700 text-sm outline-none transition-all cursor-pointer appearance-none"
+                                            :id="'category-' + row.id"
+                                            :class="errors.rows?.[index]?.category_id ? 'border-red-500' : ''"
+                                            @keydown.enter.prevent="focusNext(row.id, 'category')"
+                                        >
                                             <template x-for="cat in currentCategories" :key="cat.id">
                                                 <option :value="cat.id" x-text="cat.name"></option>
                                             </template>
                                         </select>
                                     </td>
                                     <td class="px-2 py-4">
-                                        <input type="text" x-model="row.description" placeholder="内容を入力" class="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-bold text-gray-700 text-sm outline-none transition-all">
+                                        <input
+                                            type="text"
+                                            x-model="row.description"
+                                            placeholder="内容を入力"
+                                            class="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-bold text-gray-700 text-sm outline-none transition-all"
+                                            :id="'description-' + row.id"
+                                            :class="errors.rows?.[index]?.description ? 'border-red-500' : ''"
+                                            @keydown.enter.prevent="focusNext(row.id, 'description')"
+                                        >
                                     </td>
                                     <td class="px-2 py-4">
                                         <div class="relative">
@@ -147,14 +186,7 @@
                                                 x-model="row.amount"
                                                 :id="'amount-' + row.id"
                                                 placeholder="0"
-                                                @keydown.enter.prevent="
-                                                    addRow();
-                                                    if (!$event.shiftKey) {
-                                                        $nextTick(() => {
-                                                            document.getElementById('amount-' + rows[rows.length - 1].id)?.focus()
-                                                        })
-                                                    }
-                                                "
+                                                @keydown.enter.prevent="focusNext(row.id, 'amount')"
                                                 :class="activeTab === 'income' ? 'text-emerald-600' : 'text-gray-900'"
                                                 class="w-full pl-7 pr-4 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-black text-right text-base outline-none transition-all">
                                         </div>
