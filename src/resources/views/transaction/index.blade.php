@@ -212,7 +212,7 @@
 
         {{-- サイド集計エリア --}}
         <div class="lg:col-span-1 space-y-6">
-            <div class="bg-white p-10 rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100">
+            <div class="bg-white p-10 rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 md:sticky md:top-5 md:right-5">
                 <div class="mb-8">
                     <h3 class="text-xl font-black text-gray-800" x-text="activeTab === 'expense' ? '支出合計' : '収入合計'"></h3>
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Manage Balance</p>
