@@ -79,30 +79,21 @@
     {{-- ヘッダーセクション --}}
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div class="flex items-center space-x-4">
-            <a href="{{
-                route('dashboard',
-                    [
-                        'year' => $targetMonth->copy()->subMonth()->year,
-                        'month' => $targetMonth->copy()->subMonth()->month,
-                    ])
-                }}"
-                class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
+        @php
+            $prevMonth = $targetMonth->copy()->subMonth();
+            $nextMonth = $targetMonth->copy()->addMonth();
+        @endphp
+            <a href="{{ route('dashboard', ['year' => $prevMonth->year, 'month' => $prevMonth->month])}}" class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </a>
             <h1 class="text-2xl font-bold text-gray-800">{{ $targetMonth->format('Y年m月') }}</h1>
-            <a href="{{
-                route('dashboard',[
-                        'year' => $targetMonth->copy()->addMonth()->year,
-                        'month' => $targetMonth->copy()->addMonth()->month,
-                    ])
-                }}"
-                class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </a>
+                <a href="{{ route('dashboard', ['year' => $nextMonth->year, 'month' => $nextMonth->month]) }}" class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
         </div>
 
         <div class="flex items-center gap-2">
