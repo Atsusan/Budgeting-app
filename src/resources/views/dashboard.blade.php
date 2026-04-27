@@ -113,17 +113,18 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <p class="text-sm font-medium text-gray-500 mb-1">{{ $targetMonth->format('Y年m月') }}の総支出</p>
-            <p class="text-3xl font-extrabold text-red-500">¥84,200</p>
-            <p class="text-xs text-gray-400 mt-2">先月より ¥12,000 減少</p>
+            <p class="text-3xl font-extrabold text-red-500">¥{{ number_format($totalExpense) }}</p>
+            <p class="text-xs text-gray-400 mt-2">先月より {{ $expenseDiff >= 0 ? '+' : '-' }} ¥{{ number_format(abs($expenseDiff)) }} {{ $expenseDiff >= 0 ? '増加' : '減少' }}</p>
         </div>
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <p class="text-sm font-medium text-gray-500 mb-1">{{ $targetMonth->format('Y年m月') }}の総収入</p>
-            <p class="text-3xl font-extrabold text-emerald-500">¥1,250,000</p>
-            <p class="text-xs text-gray-400 mt-2">先月より ¥10,000 増加</p>
+            <p class="text-3xl font-extrabold text-emerald-500">¥{{ number_format($totalIncome) }}</p>
+            <p class="text-xs text-gray-400 mt-2">先月より {{ $incomeDiff >= 0 ? '+' : '-' }} ¥{{ number_format(abs($incomeDiff)) }} {{ $incomeDiff >= 0 ? '増加' : '減少' }}</p>
         </div>
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 bg-gradient-to-br from-white to-indigo-50/30">
             <p class="text-sm font-medium text-gray-500 mb-1">{{ $targetMonth->format('Y年m月') }}の収支残高</p>
-            <p class="text-3xl font-extrabold text-indigo-900">¥165,800</p>
+            <p class="text-3xl font-extrabold {{ $totalBalance >= 0 ? 'text-indigo-900' : 'text-red-500' }}"> {{ $totalBalance >= 0 ? '+' : '-' }} ¥{{ number_format(abs($totalBalance)) }}</p>
+            <p class="text-xs text-gray-400 mt-2">先月より {{ $balanceDiff >= 0 ? '+' : '-' }} ¥{{ number_format(abs($balanceDiff)) }} {{ $balanceDiff >= 0 ? '増加' : '減少' }}</p>
         </div>
     </div>
 
