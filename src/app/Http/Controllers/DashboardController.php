@@ -3,13 +3,21 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
-        $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
+        $yearParam = request('year', Carbon::now()->year);
+        $monthParam = request('month', Carbon::now()->month);
+        $targetMonth = $monthParam
+            ? Carbon::createFromFormat('Y-m', "{$yearParam}-{$monthParam}")
+            : now()->startOfMonth();
+
+        // 一覧表示用
+        $startOfMonth = $targetMonth->copy()->startOfMonth()->toDateString();
+        $endOfMonth = $targetMonth->copy()->endOfMonth()->toDateString();
 
         $transactions = auth()->user()->transactions()
             ->with('category')
@@ -26,6 +34,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'transactions' => $transactions,
             'categories' => $categories,
+            'targetMonth' => $targetMonth,
         ]);
     }
 }

@@ -79,17 +79,30 @@
     {{-- ヘッダーセクション --}}
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div class="flex items-center space-x-4">
-            <button class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
+            <a href="{{
+                route('dashboard',
+                    [
+                        'year' => $targetMonth->copy()->subMonth()->year,
+                        'month' => $targetMonth->copy()->subMonth()->month,
+                    ])
+                }}"
+                class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
-            </button>
-            <h1 class="text-2xl font-bold text-gray-800">2026年3月</h1>
-            <button class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
+            </a>
+            <h1 class="text-2xl font-bold text-gray-800">{{ $targetMonth->format('Y年m月') }}</h1>
+            <a href="{{
+                route('dashboard',[
+                        'year' => $targetMonth->copy()->addMonth()->year,
+                        'month' => $targetMonth->copy()->addMonth()->month,
+                    ])
+                }}"
+                class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
-            </button>
+            </a>
         </div>
 
         <div class="flex items-center gap-2">
@@ -108,17 +121,17 @@
     {{-- サマリーカード --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <p class="text-sm font-medium text-gray-500 mb-1">今月の総支出</p>
+            <p class="text-sm font-medium text-gray-500 mb-1">{{ $targetMonth->format('Y年m月') }}の総支出</p>
             <p class="text-3xl font-extrabold text-red-500">¥84,200</p>
             <p class="text-xs text-gray-400 mt-2">先月より ¥12,000 減少</p>
         </div>
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <p class="text-sm font-medium text-gray-500 mb-1">今月の総収入</p>
+            <p class="text-sm font-medium text-gray-500 mb-1">{{ $targetMonth->format('Y年m月') }}の総収入</p>
             <p class="text-3xl font-extrabold text-emerald-500">¥1,250,000</p>
             <p class="text-xs text-gray-400 mt-2">先月より ¥10,000 増加</p>
         </div>
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 bg-gradient-to-br from-white to-indigo-50/30">
-            <p class="text-sm font-medium text-gray-500 mb-1">今月の収支残高</p>
+            <p class="text-sm font-medium text-gray-500 mb-1">{{ $targetMonth->format('Y年m月') }}の収支残高</p>
             <p class="text-3xl font-extrabold text-indigo-900">¥165,800</p>
         </div>
     </div>
@@ -130,7 +143,7 @@
         <div class="lg:col-span-2">
             <h2 class="text-lg font-bold mb-4 flex items-center">
                 <span class="w-1.5 h-6 bg-indigo-500 rounded-full mr-3"></span>
-                今月の収支履歴
+                {{ $targetMonth->format('Y年m月') }}の収支履歴
             </h2>
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <table class="w-full text-left">
