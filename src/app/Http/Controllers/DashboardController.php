@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $monthParam = request('month', Carbon::now()->month);
         // 年月を指定してCarbonインスタンスを作成
         $targetMonth = $monthParam
-            ? Carbon::createFromFormat('Y-m', "{$yearParam}-{$monthParam}")
+            ? Carbon::createFromDate($yearParam, $monthParam, 1)
             : now()->startOfMonth();
 
         // 一覧表示用の開始日と終了日を取得
@@ -52,6 +52,21 @@ class DashboardController extends Controller
         $expenseDiff = $totalExpense - $prevTotalExpense;
         $incomeDiff  = $totalIncome  - $prevTotalIncome;
         $balanceDiff = $totalBalance - ($prevTotalIncome - $prevTotalExpense);
+
+        // カテゴリ別の支出を計算
+        $categoryExpenses = $transactions->filter(fn($t) => $t->category->type === 'expense')
+            ->groupBy('category_id')
+            ->map(function ($group) {
+                return [
+                    'category_id' => $group->first()->category_id,
+                    'category_name' => $group->first()->category->name,
+                    'amount' => $group->sum('amount'),
+                    'color_code' => $group->first()->category->color_code,
+                ];
+            })
+            ->sortByDesc('amount')
+            ->values();
+
         return view('dashboard', [
             'transactions' => $transactions,
             'categories' => $categories,
@@ -62,6 +77,7 @@ class DashboardController extends Controller
             'expenseDiff' => $expenseDiff,
             'incomeDiff' => $incomeDiff,
             'balanceDiff' => $balanceDiff,
+            'categoryExpenses' => $categoryExpenses,
         ]);
     }
 }

@@ -83,17 +83,17 @@
             $prevMonth = $targetMonth->copy()->subMonth();
             $nextMonth = $targetMonth->copy()->addMonth();
         @endphp
-            <a href="{{ route('dashboard', ['year' => $prevMonth->year, 'month' => $prevMonth->month])}}" class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
+            <a href="{{ route('dashboard', ['year' => $prevMonth->year, 'month' => $prevMonth->month]) }}" class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </a>
             <h1 class="text-2xl font-bold text-gray-800">{{ $targetMonth->format('Y年m月') }}</h1>
-                <a href="{{ route('dashboard', ['year' => $nextMonth->year, 'month' => $nextMonth->month]) }}" class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
+            <a href="{{ route('dashboard', ['year' => $nextMonth->year, 'month' => $nextMonth->month]) }}" class="p-2 hover:bg-gray-100 rounded-full transition text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
         </div>
 
         <div class="flex items-center gap-2">
@@ -189,24 +189,21 @@
                 支出カテゴリ分析
             </h2>
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-5">
+                @forelse ( $categoryExpenses as $categoryExpense)
                 <div>
                     <div class="flex justify-between text-sm mb-2">
-                        <span class="text-gray-600 font-medium">食費</span>
-                        <span class="font-bold">45%</span>
+                        <span class="text-gray-600 font-medium">{{ $categoryExpense['category_name'] }}</span>
+                        <span class="font-bold">{{ $totalExpense > 0 ? number_format($categoryExpense['amount'] / $totalExpense * 100) : 0 }}%</span>
                     </div>
                     <div class="w-full bg-gray-100 rounded-full h-2">
-                        <div class="bg-orange-400 h-2 rounded-full" style="width: 45%"></div>
+                        <div class="bg-orange-400 h-2 rounded-full" style="width: {{ $totalExpense > 0 ? number_format($categoryExpense['amount'] / $totalExpense * 100) : 0 }}%; background-color: {{ $categoryExpense['color_code'] }}; "></div>
                     </div>
                 </div>
-                <div>
-                    <div class="flex justify-between text-sm mb-2">
-                        <span class="text-gray-600 font-medium">固定費</span>
-                        <span class="font-bold">35%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-2">
-                        <div class="bg-blue-400 h-2 rounded-full" style="width: 35%"></div>
-                    </div>
+                @empty
+                <div class="text-center text-gray-500">
+                    支出カテゴリ分析がありません
                 </div>
+                @endforelse
             </div>
         </div>
     </div>
