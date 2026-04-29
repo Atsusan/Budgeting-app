@@ -5,10 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
-use Illuminate\Support\Facades\DB;
+use App\Services\TransactionService;
 
 class TransactionController extends Controller
 {
+
+    // コンストラクタ
+    public function __construct(
+        private TransactionService $transactionService
+    ){}
+
+    // 一覧画面
     public function index()
     {
         // ユーザーを取得
@@ -24,29 +31,24 @@ class TransactionController extends Controller
             'categories'  => $categories,
         ]);
     }
+
+    // 作成画面
     public function create()
     {
 
     }
+
+    // 作成
     public function store(TransactionRequest $request)
     {
         $validated = $request->validated();
 
-        // 失敗した時に全件ロールバック
-        DB::transaction(function () use ($validated) {
-            foreach ($validated['rows'] as $row)  {
-                Transaction::create([
-                    'user_id' => auth()->id(),
-                    'date' => $row['date'],
-                    'category_id' => $row['category_id'],
-                    'description' => $row['description'],
-                    'amount' => $row['amount'],
-                ]);
-            }
-        });
+        $this->transactionService->store($validated['rows']);
 
         return redirect()->route('dashboard')->with('success', '取引が保存されました。');
     }
+
+    // 更新
     public function update(UpdateTransactionRequest $request, Transaction $transaction)
     {
         abort_if($transaction->user_id != auth()->id(), 403);
@@ -55,6 +57,8 @@ class TransactionController extends Controller
 
         return redirect()->route('dashboard')->with('updated', '取引が更新されました。');
     }
+
+    // 削除
     public function destroy(Transaction $transaction)
     {
         abort_if($transaction->user_id != auth()->id(), 403);

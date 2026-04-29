@@ -9,10 +9,12 @@ use App\Services\DashboardService;
 class DashboardController extends Controller
 {
 
-    public function __construct(private DashboardService $dashboardService)
-    {
+    // コンストラクタ
+    public function __construct(
+        private DashboardService $dashboardService
+    ){}
 
-    }
+    // 一覧画面
     public function index(Request $request)
     {
         // 年月パラメータを取得
