@@ -192,7 +192,7 @@
                 @forelse ( $categoryExpenses as $categoryExpense)
                 <div>
                     <div class="flex justify-between text-sm mb-2">
-                        <span class="text-gray-600 font-medium">{{ $categoryExpense['category_name'] }}</span>
+                        <span class="text-gray-600 font-medium">{{ $categoryExpense['category_name'] }}  <span class="text-s text-gray-500">(¥{{ number_format($categoryExpense['amount']) }})</span></span>
                         <span class="font-bold">{{ $totalExpense > 0 ? number_format($categoryExpense['amount'] / $totalExpense * 100) : 0 }}%</span>
                     </div>
                     <div class="w-full bg-gray-100 rounded-full h-2">
