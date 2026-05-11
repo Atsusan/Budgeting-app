@@ -18,3 +18,4 @@ yarn-error.log
 # Docker関連
 db-store/
 ssl/
+/src/.git
