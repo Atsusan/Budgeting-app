@@ -112,5 +112,3 @@ export default defineConfig({
   },
 });
 ```
-# Budgeting-app
-# Budgeting-app
