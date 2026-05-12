@@ -245,7 +245,7 @@
 
                     <div class="flex flex-col gap-3">
                         <button type="button" @click="openEditModal()" class="w-full bg-indigo-600 text-white py-3 font-bold rounded-2xl hover:bg-indigo-700 transition">編集</button>
-                        <form class="w-full" :action="`/transaction/${selectedItem.id}`" method="POST">
+                        <form class="w-full" :action="'{{ url('transaction') }}/' + selectedItem.id" method="POST">
                             @method('DELETE')
                             @csrf
                             <button type="submit" class="w-full bg-red-50 text-red-600 py-3 font-bold rounded-2xl hover:bg-red-100 transition" onclick="return confirm('本当に削除しますか？')">削除</button>
@@ -255,7 +255,7 @@
 
                 {{-- B. 編集フォームモード --}}
                 <div x-show="isEditing" x-cloak>
-                    <form class="w-full" :action="`/transaction/${selectedItem.id}`" method="POST">
+                    <form class="w-full" :action="'{{ url('transaction') }}/' + selectedItem.id" method="POST">
                         @csrf
                         @method('PATCH')
                         <div class="space-y-4 mb-6">
