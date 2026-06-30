@@ -133,8 +133,8 @@
         <div class="lg:col-span-3 space-y-6">
             <div class="bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
+                    <table class="w-full text-left block md:table">
+                        <thead class="hidden md:table-header-group">
                             <tr class="bg-gray-50/50 border-b border-gray-100">
                                 <th class="pl-8 pr-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">日付</th>
                                 <th class="px-4 py-5 text-[11px] font-black text-gray-400 uppercase tracking-widest">カテゴリ</th>
@@ -143,10 +143,11 @@
                                 <th class="pl-4 pr-8 py-5"></th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-50">
+                        <tbody class="divide-y divide-gray-100 md:divide-y md:divide-gray-50 block md:table-row-group">
                             <template x-for="(row, index) in rows" :key="row.id">
-                                <tr class="transition-colors group">
-                                    <td class="pl-8 pr-4 py-5">
+                                <tr class="transition-colors group block md:table-row p-4 mb-4 bg-white rounded-2xl border border-gray-100 shadow-sm md:border-none md:p-0 md:mb-0 md:bg-transparent md:shadow-none">
+                                    <td class="block md:table-cell py-2 md:pl-8 md:pr-4 md:py-5">
+                                        <label class="block md:hidden text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1">日付</label>
                                         <input
                                             type="date"
                                             x-model="row.date"
@@ -156,7 +157,8 @@
                                             @keydown.enter.prevent="focusNext(row.id, 'date')"
                                         >
                                     </td>
-                                    <td class="px-2 py-4">
+                                    <td class="block md:table-cell py-2 md:px-2 md:py-4">
+                                        <label class="block md:hidden text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1">カテゴリ</label>
                                         <select
                                             x-model="row.category_id"
                                             class="w-full px-3 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-bold text-gray-700 text-sm outline-none transition-all cursor-pointer appearance-none"
@@ -169,7 +171,8 @@
                                             </template>
                                         </select>
                                     </td>
-                                    <td class="px-2 py-4">
+                                    <td class="block md:table-cell py-2 md:px-2 md:py-4">
+                                        <label class="block md:hidden text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1">内容</label>
                                         <input
                                             type="text"
                                             x-model="row.description"
@@ -180,7 +183,8 @@
                                             @keydown.enter.prevent="focusNext(row.id, 'description')"
                                         >
                                     </td>
-                                    <td class="px-2 py-4">
+                                    <td class="block md:table-cell py-2 md:px-2 md:py-4">
+                                        <label class="block md:hidden text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1">金額</label>
                                         <div class="relative">
                                             <input type="number"
                                                 x-model="row.amount"
@@ -188,11 +192,12 @@
                                                 placeholder="0"
                                                 @keydown.enter.prevent="focusNext(row.id, 'amount')"
                                                 :class="activeTab === 'income' ? 'text-emerald-600' : 'text-gray-900'"
-                                                class="w-full pl-7 pr-4 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-black text-right text-base outline-none transition-all">
+                                                class="w-full pl-7 pr-4 py-3 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-xl font-black text-left md:text-right text-base outline-none transition-all">
                                         </div>
                                     </td>
-                                    <td class="pl-2 pr-8 py-4">
-                                        <button @click="removeRow(index)" class="p-2 text-gray-300 hover:text-red-500 transition-colors">
+                                    <td class="flex justify-end items-center pt-4 mt-2 border-t border-gray-50 md:table-cell md:pt-0 md:mt-0 md:border-none md:pl-2 md:pr-8 md:py-4">
+                                        <button @click="removeRow(index)" class="flex items-center gap-1 p-2 text-gray-400 hover:text-red-500 transition-colors text-xs font-bold md:p-2">
+                                            <span class="md:hidden">この行を削除</span>
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </td>
