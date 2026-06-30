@@ -138,47 +138,60 @@
                 {{ $targetMonth->format('Y年m月') }}の収支履歴
             </h2>
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-gray-50/50 border-b border-gray-100">
-                            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">日付</th>
-                            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">カテゴリ</th>
-                            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">内容</th>
-                            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase text-right">金額</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 text-sm">
-                        {{-- 行をクリックで詳細モーダルを表示 --}}
-                        @forelse ($transactions as $transaction)
-                            <tr class="hover:bg-gray-50 transition cursor-pointer"
-                                @click="openModal({
-                                            id: '{{ $transaction->id }}',
-                                            date: '{{ $transaction->date->format('Y/m/d') }}',
-                                            date_raw: '{{ $transaction->date->format('Y-m-d') }}',
-                                            category: {{ Js::from($transaction->category->name) }},
-                                            amount: '{{ $transaction->category->type === 'income' ? '+' : '-' }} ¥{{ number_format($transaction->amount) }}',
-                                            type: '{{ $transaction->category->type }}',
-                                            description: {{ Js::from($transaction->description) }},
-                                            color_code: {{ Js::from($transaction->category->color_code) }},
-                                            category_id: '{{ $transaction->category_id }}',
-                                            raw_amount: '{{ $transaction->amount }}',
-                                        })">
-                                <td class="px-6 py-4 text-gray-500">{{ $transaction->date->format('Y/m/d') }}</td>
-                                <td class="px-6 py-4 text-gray-500">{{ $transaction->category->name }}</td>
-                                <td class="px-6 py-4 font-medium">{{ $transaction->description }}</td>
-                                <td class="px-6 py-4 font-bold {{ $transaction->category->type === 'income' ? 'text-emerald-500' : 'text-red-500' }}  text-right">
-                                    {{ $transaction->category->type === 'income' ? '+' : '-' }} ¥{{ number_format($transaction->amount) }}
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" class="px-6 py-4 text-center text-gray-500">
-                                    今月の収支履歴がありません
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+<table class="w-full text-left border-collapse">
+    <thead class="hidden md:table-header-group">
+        <tr class="bg-gray-50/50 border-b border-gray-100">
+            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">日付</th>
+            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">カテゴリ</th>
+            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">内容</th>
+            <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase text-right">金額</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100 text-sm">
+        @forelse ($transactions as $transaction)
+            <tr class="block md:table-row hover:bg-gray-50 transition cursor-pointer p-4 md:p-0"
+                @click="openModal({
+                            id: '{{ $transaction->id }}',
+                            date: '{{ $transaction->date->format('Y/m/d') }}',
+                            date_raw: '{{ $transaction->date->format('Y-m-d') }}',
+                            category: {{ Js::from($transaction->category->name) }},
+                            amount: '{{ $transaction->category->type === 'income' ? '+' : '-' }} ¥{{ number_format($transaction->amount) }}',
+                            type: '{{ $transaction->category->type }}',
+                            description: {{ Js::from($transaction->description) }},
+                            color_code: {{ Js::from($transaction->category->color_code) }},
+                            category_id: '{{ $transaction->category_id }}',
+                            raw_amount: '{{ $transaction->amount }}',
+            })">
+                <td class="flex justify-between md:table-cell px-0 py-1 md:px-6 md:py-4 text-gray-500">
+                    <span class="md:hidden text-xs font-semibold text-gray-400">日時/カテゴリ</span>
+                    <div>
+                        <span>{{ $transaction->date->format('Y/m/d') }}</span>
+                        <span class="inline-block md:hidden ml-2 px-2 py-0.5 text-xs bg-gray-100 rounded-full">{{ $transaction->category->name }}</span>
+                    </div>
+                </td>
+                <td class="hidden md:table-cell px-6 py-4 text-gray-500">
+                    {{ $transaction->category->name }}
+                </td>
+                <td class="flex justify-between md:table-cell px-0 py-1 md:px-6 md:py-4 font-medium">
+                    <span class="md:hidden text-xs font-semibold text-gray-400">内容</span>
+                    <span class="text-right md:text-left">{{ $transaction->description }}</span>
+                </td>
+                <td class="flex justify-between items-center md:table-cell px-0 pt-2 pb-1 md:px-6 md:py-4 font-bold {{ $transaction->category->type === 'income' ? 'text-emerald-500' : 'text-red-500' }} text-right border-t border-dashed border-gray-100 mt-2 pt-2 md:border-none md:mt-0 md:pt-4">
+                    <span class="md:hidden text-xs font-semibold text-gray-400">金額</span>
+                    <span class="text-base md:text-sm">
+                        {{ $transaction->category->type === 'income' ? '+' : '-' }} ¥{{ number_format($transaction->amount) }}
+                    </span>
+                </td>
+            </tr>
+        @empty
+            <tr class="block md:table-row">
+                <td colspan="4" class="block md:table-cell px-6 py-8 text-center text-gray-500">
+                    今月の収支履歴がありません
+                </td>
+            </tr>
+        @endforelse
+    </tbody>
+</table>
             </div>
         </div>
 
